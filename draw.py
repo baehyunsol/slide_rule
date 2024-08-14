@@ -12,7 +12,7 @@ font = pygame.font.Font(None, 96)
 # div by 1000 to get f_scale (which is 1.0 ~ 10.0)
 def get_linear_scale() -> Tuple[list[int], list[int]]:  # (all scale, marked scale)
     return (
-        list(range(1000, 2000, 25)) + list(range(2000, 4000, 50)) + list(range(4000, 10000, 100)),
+        list(range(1000, 1400, 10)) + list(range(1400, 2000, 25)) + list(range(2000, 4000, 50)) + list(range(4000, 10000, 100)),
         list(range(1000, 10000, 1000)) + list(range(1000, 2000, 100)) + list(range(2000, 4000, 250)),
     )
 
@@ -25,8 +25,8 @@ def get_log_scale() -> Tuple[list[int], list[int]]:  # (all scale, marked scale)
 
 def get_sqrt_scale() -> Tuple[list[int], list[int]]:  # (all scale, marked scale)
     return (
-        list(range(1000, 2000, 25)) + list(range(2000, 3001, 50)),
-        list(range(1000, 3001, 100)),
+        list(range(1000, 1300, 10)) + list(range(1300, 2000, 25)) + list(range(2000, 3051, 50)),
+        list(range(1000, 1300, 50)) + list(range(1000, 3001, 100)),
     )
 
 def blit_text_at(
@@ -93,7 +93,8 @@ def draw_disk(
 
         elif scale % 500 == 0 or\
             scale % 100 == 0 and scale < 2000 or\
-            scale % 250 == 0 and 2000 < scale < 4000:
+            scale % 250 == 0 and 2000 < scale < 4000 or\
+            scale % 50 == 0 and scale < 1400:
             r_start = 1360
 
         angle = (math.log10(f_scale) - 0.25) * 6.283185307179586
@@ -152,7 +153,8 @@ def draw_disk(
             angle = (math.log10(f_scale ** 2) - 0.25) * 6.283185307179586
             r = 8
 
-            if scale % 100 == 0:
+            if scale % 100 == 0 or\
+                scale % 50 == 0 and scale < 1300:
                 r = 16
 
             pygame.draw.circle(
