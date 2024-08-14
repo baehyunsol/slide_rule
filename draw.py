@@ -53,26 +53,28 @@ def draw_hand(
     surface: Surface,
     angle: float,
     r: float,
+    offset: Tuple[float, float],
 ):
+    offset_x, offset_y = offset
     angle -= 90
     angle /= 180 / math.pi
     pygame.draw.line(
         surface,
         (192, 32, 192),
-        (HALF_SCREEN, HALF_SCREEN),
-        (HALF_SCREEN + r * math.cos(angle), HALF_SCREEN + r * math.sin(angle)),
+        (HALF_SCREEN + offset_x, HALF_SCREEN + offset_y),
+        (HALF_SCREEN + r * math.cos(angle) + offset_x, HALF_SCREEN + r * math.sin(angle) + offset_y),
         UNIT_RADIUS * 2,
     )
     pygame.draw.circle(
         surface,
         (192, 32, 192),
-        (HALF_SCREEN + r * math.cos(angle), HALF_SCREEN + r * math.sin(angle)),
+        (HALF_SCREEN + r * math.cos(angle) + offset_x, HALF_SCREEN + r * math.sin(angle) + offset_y),
         UNIT_RADIUS,
     )
     pygame.draw.circle(
         surface,
         (0, 0, 0),
-        (HALF_SCREEN, HALF_SCREEN),
+        (HALF_SCREEN + offset_x, HALF_SCREEN + offset_y),
         UNIT_RADIUS * 6,
     )
 
@@ -192,7 +194,7 @@ def draw_disk(
     result.set_colorkey((255, 255, 255))
     return result
 
-background = pygame.surface.Surface((SCREEN_SIZE, SCREEN_SIZE))
+background = pygame.surface.Surface((SCREEN_SIZE + 2 * UNIT_LENGTH, SCREEN_SIZE + 2 * UNIT_LENGTH))
 background.fill((255, 255, 255))
 background.set_colorkey((255, 255, 255))
 
@@ -203,6 +205,7 @@ draw_hand(
     background,
     angle2,
     HALF_SCREEN - UNIT_LENGTH,
+    (UNIT_LENGTH, UNIT_LENGTH),
 )
 
 # main disk
@@ -219,7 +222,7 @@ disk2 = draw_disk(
     draw_sqrt=True,
 )
 
-background.blit(disk1, (0, 0))
-background.blit(disk2, (0, 0))
+background.blit(disk1, (UNIT_LENGTH, UNIT_LENGTH))
+background.blit(disk2, (UNIT_LENGTH, UNIT_LENGTH))
 
 pygame.image.save(background, "slide_rule.png")
