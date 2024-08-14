@@ -6,8 +6,13 @@ from typing import Tuple
 
 pygame.init()
 
-# TODO: make font sizes adjustable
-font = pygame.font.Font(None, 96)
+# NOTE: it works best when SCREEN_SIZE is 2880
+SCREEN_SIZE = 2880
+HALF_SCREEN = SCREEN_SIZE // 2
+UNIT_LENGTH = SCREEN_SIZE // 72
+UNIT_RADIUS = SCREEN_SIZE // 480
+
+font = pygame.font.Font(None, UNIT_LENGTH * 2)
 
 # div by 1000 to get f_scale (which is 1.0 ~ 10.0)
 def get_linear_scale() -> Tuple[list[int], list[int]]:  # (all scale, marked scale)
@@ -37,7 +42,7 @@ def blit_text_at(
 ):
     text = pygame.transform.rotate(text, -angle * 180 / math.pi - 90)
     w, h = text.get_size()
-    corner = (1440 + r * math.cos(angle) - w // 2, 1440 + r * math.sin(angle) - h // 2)
+    corner = (HALF_SCREEN + r * math.cos(angle) - w // 2, HALF_SCREEN + r * math.sin(angle) - h // 2)
 
     surface.blit(
         text,
@@ -54,21 +59,21 @@ def draw_hand(
     pygame.draw.line(
         surface,
         (192, 32, 192),
-        (1440, 1440),
-        (1440 + r * math.cos(angle), 1440 + r * math.sin(angle)),
-        12,
+        (HALF_SCREEN, HALF_SCREEN),
+        (HALF_SCREEN + r * math.cos(angle), HALF_SCREEN + r * math.sin(angle)),
+        UNIT_RADIUS * 2,
     )
     pygame.draw.circle(
         surface,
         (192, 32, 192),
-        (1440 + r * math.cos(angle), 1440 + r * math.sin(angle)),
-        6,
+        (HALF_SCREEN + r * math.cos(angle), HALF_SCREEN + r * math.sin(angle)),
+        UNIT_RADIUS,
     )
     pygame.draw.circle(
         surface,
         (0, 0, 0),
-        (1440, 1440),
-        40,
+        (HALF_SCREEN, HALF_SCREEN),
+        UNIT_RADIUS * 6,
     )
 
 def draw_disk(
@@ -77,41 +82,41 @@ def draw_disk(
     draw_log: bool = False,
     draw_sqrt: bool = False,
 ):
-    result = pygame.surface.Surface((2880, 2880))
+    result = pygame.surface.Surface((SCREEN_SIZE, SCREEN_SIZE))
     result.fill((255, 255, 255))
-    pygame.draw.circle(result, (255, 255, 255), (1440, 1440), 1440)
-    pygame.draw.circle(result, (0, 0, 0), (1440, 1440), 40)
+    pygame.draw.circle(result, (255, 255, 255), (HALF_SCREEN, HALF_SCREEN), HALF_SCREEN)
+    pygame.draw.circle(result, (0, 0, 0), (HALF_SCREEN, HALF_SCREEN), UNIT_RADIUS * 6)
 
     linear_scale, marked_linear_scale = get_linear_scale()
 
     for scale in linear_scale:
         f_scale = scale / 1000
-        r_start = 1400
+        r_start = HALF_SCREEN - UNIT_LENGTH
 
         if scale % 1000 == 0:
-            r_start = 1320
+            r_start = HALF_SCREEN - 3 * UNIT_LENGTH
 
         elif scale % 500 == 0 or\
             scale % 100 == 0 and scale < 2000 or\
             scale % 250 == 0 and 2000 < scale < 4000 or\
             scale % 50 == 0 and scale < 1400:
-            r_start = 1360
+            r_start = HALF_SCREEN - 2 * UNIT_LENGTH
 
         angle = (math.log10(f_scale) - 0.25) * 6.283185307179586
 
         pygame.draw.line(
             result,
             (0, 0, 0),
-            (1440 + r_start * math.cos(angle), 1440 + r_start * math.sin(angle)),
-            (1440 + 1440 * math.cos(angle), 1440 + 1440 * math.sin(angle)),
-            4,
+            (HALF_SCREEN + r_start * math.cos(angle), HALF_SCREEN + r_start * math.sin(angle)),
+            (HALF_SCREEN + HALF_SCREEN * math.cos(angle), HALF_SCREEN + HALF_SCREEN * math.sin(angle)),
+            UNIT_RADIUS,
         )
 
         if scale in marked_linear_scale:
             blit_text_at(
                 result,
                 font.render(str(f_scale), True, (0, 0, 0)),
-                1280,
+                HALF_SCREEN - 4 * UNIT_LENGTH,
                 angle,
             )
 
@@ -122,18 +127,18 @@ def draw_disk(
         for scale in log_scale:
             f_scale = scale / 1000
             angle = (f_scale - 0.25) * 6.283185307179586
-            r = 8
+            r = UNIT_RADIUS
 
             if scale % 100 == 0:
-                r = 24
+                r = 3 * UNIT_RADIUS
 
             elif scale % 50 == 0:
-                r = 16
+                r = 2 * UNIT_RADIUS
 
             pygame.draw.circle(
                 result,
                 (0, 0, 0),
-                (1440 + 1150 * math.cos(angle), 1440 + 1150 * math.sin(angle)),
+                (HALF_SCREEN + (HALF_SCREEN - 7 * UNIT_LENGTH) * math.cos(angle), HALF_SCREEN + (HALF_SCREEN - 7 * UNIT_LENGTH) * math.sin(angle)),
                 r,
             )
 
@@ -141,7 +146,7 @@ def draw_disk(
                 blit_text_at(
                     result,
                     font.render(str(f_scale), True, (0, 0, 0)),
-                    1080,
+                    HALF_SCREEN - 9 * UNIT_LENGTH,
                     angle,
                 )
 
@@ -151,16 +156,16 @@ def draw_disk(
         for scale in sqrt_scale:
             f_scale = scale / 1000
             angle = (math.log10(f_scale ** 2) - 0.25) * 6.283185307179586
-            r = 8
+            r = UNIT_RADIUS
 
             if scale % 100 == 0 or\
                 scale % 50 == 0 and scale < 1300:
-                r = 16
+                r = UNIT_RADIUS * 3
 
             pygame.draw.circle(
                 result,
                 (0, 0, 0),
-                (1440 + 960 * math.cos(angle), 1440 + 960 * math.sin(angle)),
+                (HALF_SCREEN + (HALF_SCREEN - 12 * UNIT_LENGTH) * math.cos(angle), HALF_SCREEN + (HALF_SCREEN - 12 * UNIT_LENGTH) * math.sin(angle)),
                 r,
             )
 
@@ -168,7 +173,7 @@ def draw_disk(
                 blit_text_at(
                     result,
                     font.render(str(f_scale), True, (0, 0, 0)),
-                    890,
+                    HALF_SCREEN - 14 * UNIT_LENGTH,
                     angle,
                 )
 
@@ -176,18 +181,18 @@ def draw_disk(
         rotated = pygame.transform.rotate(result, -rotate_result)
         r_w, r_h = rotated.get_size()
         result.fill((255, 255, 255))
-        result.blit(rotated, (0, 0), ((r_w - 2880) // 2, (r_h - 2880) // 2, 2880, 2880))
+        result.blit(rotated, (0, 0), ((r_w - SCREEN_SIZE) // 2, (r_h - SCREEN_SIZE) // 2, SCREEN_SIZE, SCREEN_SIZE))
 
     if zoom != 1.0:
         zoomed = pygame.transform.scale_by(result, zoom)
         z_w, z_h = zoomed.get_size()
         result.fill((255, 255, 255))
-        result.blit(zoomed, ((2880 - z_w) // 2, (2880 - z_h) // 2))
+        result.blit(zoomed, ((SCREEN_SIZE - z_w) // 2, (SCREEN_SIZE - z_h) // 2))
 
     result.set_colorkey((255, 255, 255))
     return result
 
-background = pygame.surface.Surface((2880, 2880))
+background = pygame.surface.Surface((SCREEN_SIZE, SCREEN_SIZE))
 background.fill((255, 255, 255))
 background.set_colorkey((255, 255, 255))
 
@@ -197,7 +202,7 @@ angle2 = float(sys.argv[2])
 draw_hand(
     background,
     angle2,
-    1400.0,
+    HALF_SCREEN - UNIT_LENGTH,
 )
 
 # main disk
@@ -209,7 +214,7 @@ disk1 = draw_disk(
 # sub disk
 disk2 = draw_disk(
     rotate_result=angle1,
-    zoom=0.83,
+    zoom=0.85,
     draw_log=True,
     draw_sqrt=True,
 )
