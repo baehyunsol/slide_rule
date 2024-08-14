@@ -198,15 +198,57 @@ background = pygame.surface.Surface((SCREEN_SIZE + 2 * UNIT_LENGTH, SCREEN_SIZE 
 background.fill((255, 255, 255))
 background.set_colorkey((255, 255, 255))
 
-angle1 = float(sys.argv[1])
-angle2 = float(sys.argv[2])
+angle1 = 0
+angle2 = 0
+output = "slide_rule.png"
+curr_parsing_arg = None
 
-draw_hand(
-    background,
-    angle2,
-    HALF_SCREEN - UNIT_LENGTH,
-    (UNIT_LENGTH, UNIT_LENGTH),
-)
+help_message = '''
+Usage: python draw.py [OPTIONS]
+
+Options:
+    --angle1 <angle>      Set the angle of the sub disk    (default: 0)
+    --angle2 <angle>      Set the angle of the hand        (default: 0)
+    --resolution <size>   Set the resolution of the image  (default: 2880)
+    --output <path>       Set the output path              (default: slide_rule.png)
+    --help                Show this message
+'''
+
+for arg in sys.argv[1:]:
+    if arg.startswith("--"):
+        if curr_parsing_arg is not None:
+            print(f"Argument {curr_parsing_arg} is not given value")
+            sys.exit(1)
+
+        curr_parsing_arg = arg[2:]
+
+        if curr_parsing_arg == "help":
+            print(help_message)
+            sys.exit(0)
+
+        elif curr_parsing_arg not in ["angle1", "angle2", "resolution", "output"]:
+            print(f"Unknown argument: {arg}")
+            sys.exit(1)
+
+    elif curr_parsing_arg == "angle1":
+        angle1 = float(arg)
+        curr_parsing_arg = None
+
+    elif curr_parsing_arg == "angle2":
+        angle2 = float(arg)
+        curr_parsing_arg = None
+
+    elif curr_parsing_arg == "resolution":
+        SCREEN_SIZE = int(arg)
+        curr_parsing_arg = None
+
+    elif curr_parsing_arg == "output":
+        output = arg
+        curr_parsing_arg = None
+
+    else:
+        print(f"Unknown argument: {arg}")
+        sys.exit(1)
 
 # main disk
 disk1 = draw_disk(
@@ -222,7 +264,14 @@ disk2 = draw_disk(
     draw_sqrt=True,
 )
 
+draw_hand(
+    background,
+    angle2,
+    HALF_SCREEN - UNIT_LENGTH,
+    (UNIT_LENGTH, UNIT_LENGTH),
+)
+
 background.blit(disk1, (UNIT_LENGTH, UNIT_LENGTH))
 background.blit(disk2, (UNIT_LENGTH, UNIT_LENGTH))
 
-pygame.image.save(background, "slide_rule.png")
+pygame.image.save(background, output)
