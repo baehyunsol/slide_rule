@@ -8,11 +8,6 @@ pygame.init()
 
 # NOTE: it works best when SCREEN_SIZE is 2880
 SCREEN_SIZE = 2880
-HALF_SCREEN = SCREEN_SIZE // 2
-UNIT_LENGTH = SCREEN_SIZE // 72
-UNIT_RADIUS = SCREEN_SIZE // 480
-
-font = pygame.font.Font(None, UNIT_LENGTH * 2)
 
 # div by 1000 to get f_scale (which is 1.0 ~ 10.0)
 def get_linear_scale() -> Tuple[list[int], list[int]]:  # (all scale, marked scale)
@@ -194,10 +189,6 @@ def draw_disk(
     result.set_colorkey((255, 255, 255))
     return result
 
-background = pygame.surface.Surface((SCREEN_SIZE + 2 * UNIT_LENGTH, SCREEN_SIZE + 2 * UNIT_LENGTH))
-background.fill((255, 255, 255))
-background.set_colorkey((255, 255, 255))
-
 angle1 = 0
 angle2 = 0
 output = "slide_rule.png"
@@ -253,6 +244,16 @@ for arg in sys.argv[1:]:
     else:
         print(f"Unknown argument: {arg}")
         sys.exit(1)
+
+HALF_SCREEN = SCREEN_SIZE // 2
+UNIT_LENGTH = SCREEN_SIZE // 72
+UNIT_RADIUS = SCREEN_SIZE // 480
+
+font = pygame.font.Font(None, UNIT_LENGTH * 2)
+
+background = pygame.surface.Surface((SCREEN_SIZE + 2 * UNIT_LENGTH, SCREEN_SIZE + 2 * UNIT_LENGTH))
+background.fill((255, 255, 255))
+background.set_colorkey((255, 255, 255))
 
 # main disk
 disk1 = draw_disk(
