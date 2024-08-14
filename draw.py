@@ -212,6 +212,10 @@ Options:
     --resolution <size>   Set the resolution of the image  (default: 2880)
     --output <path>       Set the output path              (default: slide_rule.png)
     --help                Show this message
+
+NOTE:
+    Angles are in degrees, not in radians.
+    Resolution is the size of the image (in pixels), which is a square.
 '''
 
 for arg in sys.argv[1:]:
